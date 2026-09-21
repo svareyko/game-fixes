@@ -1,0 +1,7 @@
+{
+  "block.metaltorch.iron_torch": "Железный факел",
+  "block.metaltorch.iron_wall_torch": "Железный факел",
+  "block.metaltorch.gold_torch": "Золотой факел",
+  "block.metaltorch.gold_wall_torch": "Золотой факел",
+  "modmenu.descriptionTranslation.metaltorch": "Факелы с металлом: железный светит почти белым, золотой тёплым жёлтым. Оба дают уровень света 15 против 14 у обычного факела — это потолок движка. Цвет виден в самом факеле и в искрах: свет в Minecraft бесцветный. Медного нет намеренно — в 26.2 уже есть ванильный Copper Torch."
+}

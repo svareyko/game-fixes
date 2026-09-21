@@ -98,6 +98,9 @@ desktop.ini
 # A folder leaves this list when it has something a player can use.
 /mafia-2/
 /cyberpunk-2077/
+# Builds and passes its validator, but was never play-tested, and the game's
+# own code suggests it will not keep the port yet.
+/minecraft/lanport/
 
 # --- the owner's personal Minecraft setup ------------------------------------
 # Tooling around third-party resource packs and a deployment helper for a

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "metaltorch:block/gold_wall_torch"
+    },
+    "facing=south": {
+      "model": "metaltorch:block/gold_wall_torch",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "metaltorch:block/gold_wall_torch",
+      "y": 180
+    },
+    "facing=north": {
+      "model": "metaltorch:block/gold_wall_torch",
+      "y": 270
+    }
+  }
+}

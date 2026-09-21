@@ -1,0 +1,7 @@
+{
+  "block.metaltorch.iron_torch": "Iron Torch",
+  "block.metaltorch.iron_wall_torch": "Iron Torch",
+  "block.metaltorch.gold_torch": "Gold Torch",
+  "block.metaltorch.gold_wall_torch": "Gold Torch",
+  "modmenu.descriptionTranslation.metaltorch": "Torches with a metal core: the iron torch burns almost white, the gold torch a warm yellow. Both give light level 15 against 14 of the vanilla torch - that is the ceiling of the engine. The colour shows on the torch itself and in its sparks: light in Minecraft has no colour. There is deliberately no copper torch - 26.2 already has the vanilla Copper Torch."
+}

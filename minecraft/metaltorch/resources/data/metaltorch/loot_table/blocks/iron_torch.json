@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "metaltorch:blocks/iron_torch",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "metaltorch:iron_torch"
+        }
+      ]
+    }
+  ]
+}

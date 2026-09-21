@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "metaltorch:block/iron_torch"
+    }
+  }
+}
