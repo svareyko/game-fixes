@@ -1,0 +1,4 @@
+{
+  "key.oremap.toggle": "Toggle ore markers",
+  "modmenu.descriptionTranslation.oremap": "Marks diamond ore and ancient debris on Xaero's World Map, with the depth in the marker name. Off by default: switch it on with the /oremap on command or the K key. Works only in single player and on servers in the local network."
+}

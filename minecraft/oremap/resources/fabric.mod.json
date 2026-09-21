@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "oremap",
+  "version": "0.5.0",
+  "name": "Ore Map",
+  "description": "Marks diamond ore and ancient debris on Xaero's World Map, with the depth in the marker name. Off by default: switch it on with the /oremap on command or the K key. Works only in single player and on servers in the local network.",
+  "authors": [
+    "bombuilder.by"
+  ],
+  "contact": {
+    "homepage": "https://github.com/svareyko/game-fixes/tree/HEAD/minecraft/oremap",
+    "sources": "https://github.com/svareyko/game-fixes",
+    "issues": "https://github.com/svareyko/game-fixes/issues"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "oremap.OreMapClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": ">=26.2 <26.3",
+    "fabric-api": "*",
+    "java": ">=25"
+  },
+  "recommends": {
+    "xaerominimap": ">=26.4.0",
+    "xaeroworldmap": ">=1.44.0"
+  }
+}
