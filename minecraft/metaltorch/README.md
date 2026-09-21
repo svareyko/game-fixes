@@ -128,8 +128,8 @@ launcher.
 [modrinth.com/mod/fabric-api](https://modrinth.com/mod/fabric-api). It is a `.jar` file;
 do not unpack it.
 
-**3. Download `metaltorch-1.1.0.jar`** from the release page:
-<https://github.com/svareyko/game-fixes/releases/tag/metaltorch-1.1.0>
+**3. Download `metaltorch-1.1.1.jar`** from the release page:
+<https://github.com/svareyko/game-fixes/releases/tag/metaltorch-1.1.1>
 
 **4. Open the `mods` folder.** Press `Win + R`, paste the line below and press Enter:
 
@@ -144,7 +144,7 @@ create a folder named `mods` there. (Linux: `~/.minecraft/mods`. macOS:
 > Some launchers keep a separate `mods` folder for every profile. If yours has a button
 > like "Open mods folder", use it — that is the folder the game really reads.
 
-**5. Put both jars into `mods`**: `fabric-api-….jar` and `metaltorch-1.1.0.jar`.
+**5. Put both jars into `mods`**: `fabric-api-….jar` and `metaltorch-1.1.1.jar`.
 
 **6. Close the game if it was running, then start it with the Fabric profile.**
 
@@ -163,7 +163,7 @@ Any one of these is enough:
   it loaded, and the list has to contain this line:
 
 ```
-	- metaltorch 1.1.0
+	- metaltorch 1.1.1
 ```
 
 If the game shows a Fabric window instead of starting, read it — it names the problem
@@ -172,7 +172,7 @@ in plain words. The two usual ones: *"requires fabric-api"* (step 2 was skipped)
 
 ## Uninstall
 
-Close the game and delete `metaltorch-1.1.0.jar` from the `mods` folder. No other file
+Close the game and delete `metaltorch-1.1.1.jar` from the `mods` folder. No other file
 was created anywhere: the mod has no config and writes nothing to disk.
 
 **What happens to torches you already placed.** A game without the mod no longer knows
@@ -251,19 +251,35 @@ Fabric API 0.157.0+26.2:
 * all ten resource files of every metal are in the jar and every JSON parses;
 * `fabric.mod.json` passes Fabric Loader's own parser without a warning.
 
-**About the published jar.** The 1.1.0 build that was played is not byte-for-byte the jar
-on the release page. For publication three files inside it changed: `fabric.mod.json`
-(English description, author, licence, links) and the two language files (a description
-line for Mod Menu). The compiled classes and every other resource are byte-identical to
-the verified build — this was compared entry by entry.
+**What 1.1.1 changes, and what that means for the list above.** Two corrections, both
+found by comparing the mod with the game's own torch in the 26.2 client, neither of them
+played yet:
+
+* **pistons** — the vanilla torch is declared "destroyed when pushed"
+  (`pushReaction(DESTROY)`), so a piston pops it off as an item. 1.1.0 did not set that
+  flag, and a piston would have slid a metal torch along like a stone block. 1.1.1 sets it,
+  for the standing and the wall torch;
+* **sparks of the wall torch** — they started 0.22 of a block below the tip. The model is
+  the vanilla wall torch, and the vanilla torch lifts its particles by exactly that much;
+  1.1.1 does the same.
+
+Everything else in 1.1.1 is byte-identical to the 1.1.0 jar: compared entry by entry, only
+`fabric.mod.json` and the two classes that carry these changes differ. If you prefer the
+build that was played as it is, [1.1.0 is still there](https://github.com/svareyko/game-fixes/releases/tag/metaltorch-1.1.0).
+
+**About the published 1.1.0 jar.** The 1.1.0 build that was played is not byte-for-byte
+the jar on its release page either. For publication three files inside it changed:
+`fabric.mod.json` (English description, author, licence, links) and the two language files
+(a description line for Mod Menu). The compiled classes and every other resource are
+byte-identical to the verified build — this was compared entry by entry.
 
 **Not verified:**
 
 * multiplayer — a LAN world or a dedicated server;
 * removing the mod from a world with placed torches (described above as the game's
   general behaviour);
-* pistons: the vanilla torch is declared "destroyed when pushed", this mod does not set
-  that flag, so a piston may treat a metal torch differently from a vanilla one;
+* the two corrections of 1.1.1: a piston popping a metal torch off as an item (standing
+  and on a wall), and the sparks of a wall torch starting at its tip;
 * Quilt, and long-term play in general.
 
 If something does not work for you, open an issue and attach `logs\latest.log`.

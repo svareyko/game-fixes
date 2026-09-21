@@ -14,6 +14,7 @@ import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +75,18 @@ public class MetalTorchMod implements ModInitializer {
      * The wall variant receives the loot table of the standing one: both have
      * to drop the same item, exactly like the vanilla torch - otherwise nothing
      * at all drops from a wall.
+     *
+     * pushReaction(DESTROY) is part of the vanilla torch as well: a piston pops a
+     * torch off as an item. Without it the default, NORMAL, applies and a piston
+     * slides the torch along like a stone block.
      */
     private static BlockBehaviour.Properties torchProperties() {
         return BlockBehaviour.Properties.of()
                 .noCollision()
                 .instabreak()
                 .lightLevel(state -> LIGHT_LEVEL)
-                .sound(SoundType.WOOD);
+                .sound(SoundType.WOOD)
+                .pushReaction(PushReaction.DESTROY);
     }
 
     private static final ResourceKey<CreativeModeTab> FUNCTIONAL_BLOCKS_TAB =

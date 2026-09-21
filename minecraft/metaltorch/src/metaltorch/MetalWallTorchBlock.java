@@ -33,7 +33,13 @@ public class MetalWallTorchBlock extends WallTorchBlock {
             ).apply(instance, (colour, properties) ->
                     (WallTorchBlock) new MetalWallTorchBlock(colour, properties)));
 
+    /**
+     * Where the tip of a wall torch is, relative to a standing one. The numbers are
+     * those of WallTorchBlock.animateTick: the model is the vanilla
+     * template_torch_wall, so the flame sits where the vanilla one does.
+     */
     private static final double WALL_OFFSET = 0.27;
+    private static final double WALL_LIFT = 0.22;
 
     protected final int colour;
 
@@ -51,7 +57,7 @@ public class MetalWallTorchBlock extends WallTorchBlock {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         Direction away = state.getValue(FACING).getOpposite();
         double x = pos.getX() + 0.5 + WALL_OFFSET * away.getStepX();
-        double y = pos.getY() + 0.7;
+        double y = pos.getY() + 0.7 + WALL_LIFT;
         double z = pos.getZ() + 0.5 + WALL_OFFSET * away.getStepZ();
         MetalTorchBlock.emit(level, random, x, y, z, this.colour);
     }

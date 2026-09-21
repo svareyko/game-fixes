@@ -127,7 +127,7 @@ Where the particles appear:
 | Variant | Position |
 |---|---|
 | standing | block centre, `y + 0.7` — the vanilla values |
-| wall | `y + 0.7`, and 0.27 from the block centre towards the wall (`FACING.getOpposite()`) — the vanilla horizontal offset |
+| wall | `y + 0.7 + 0.22`, and 0.27 from the block centre towards the wall (`FACING.getOpposite()`) — the vanilla values, because the model is the vanilla `template_torch_wall`. Up to 1.1.0 the `+ 0.22` was missing and the sparks started below the tip |
 
 `emit(...)` is a static method shared by both block classes; the wall class only computes
 a different position.
@@ -324,8 +324,8 @@ Known, and listed so nobody has to rediscover them:
 |---|---|---|
 | light level | 14 | 15 |
 | flame | `FLAME` particle | none; tinted `DustParticleOptions` sparks |
-| wall variant, particle height | `y + 0.7 + 0.22` | `y + 0.7` — on a wall the sparks start a little below the tip |
-| piston behaviour | `pushReaction(PushReaction.DESTROY)` | not set, so the default applies. What a piston does to a metal torch was **not checked in game** |
+| wall variant, particle height | `y + 0.7 + 0.22` | the same since 1.1.1 (`y + 0.7` before). **Not checked in game** |
+| piston behaviour | `pushReaction(PushReaction.DESTROY)`: a piston pops the torch off as an item | the same since 1.1.1. Before that nothing was set, so the default `NORMAL` applied and a piston would have slid the torch along. **Not checked in game** |
 | name of the wall block | copied from the standing block (`overrideDescription`) | its own language key with the same text |
 
 ## 12. Adding a metal
