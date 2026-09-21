@@ -1,0 +1,14 @@
+# Deterministic line endings regardless of each contributor's git config.
+* text=auto eol=lf
+
+# cmd.exe wants CRLF - a batch file with LF-only endings can break `goto`.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Never diff or merge these as text.
+*.png binary
+*.jar binary
+*.zip binary
+*.dmp binary
+*.exe binary
+*.dll binary

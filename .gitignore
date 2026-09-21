@@ -1,0 +1,107 @@
+# =============================================================================
+# game-fixes: what never goes into the public repository.
+#
+# One file for the whole tree on purpose: a new game folder is protected the
+# moment it is created, without anyone remembering to give it its own ignore
+# file. The policy: crash evidence, notes about the owner's machines and game
+# binaries never leave the machine they were made on. Only results are
+# published: the fix or the mod, and how to use it.
+#
+# This file decides WHICH files are published. What is INSIDE the files that
+# pass is checked by publish-check.py - run it before every push.
+#
+# Patterns without a leading slash match at any depth.
+# =============================================================================
+
+# --- local-only working material ---------------------------------------------
+# Crash evidence, reports sent to developers, notes about the owner's machines,
+# investigation journals, diagnostic helpers. These names are reserved for that
+# purpose at every depth: do not name a source folder "local", "dumps",
+# "bugreport" or "logs".
+bugreport/
+dumps/
+local/
+LOCAL-NOTES*.md
+.publish-check.local
+logs/
+*.log
+
+# Machine-local build hook of the Minecraft mods: where the game lives on this
+# PC and what else to tidy up after an install.
+build_local.py
+
+# --- instructions for coding agents stay local -------------------------------
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# --- crash data, wherever it turns up ----------------------------------------
+# A memory dump holds game code and whatever else was in RAM at the time.
+*.dmp
+*.mdmp
+*.hdmp
+*.wer
+*.etl
+*.nv-gpudmp
+CrashContext.runtime-xml
+
+# --- game files: copyrighted, never ours to publish --------------------------
+# Patched binaries and their backups live next to the game, not here.
+*.exe
+*.dll
+*.pak
+*.utoc
+*.ucas
+*.orig
+*.bak
+*.installed-before
+*.before-*
+
+# --- archives ----------------------------------------------------------------
+# Nothing in this repository is distributed as an archive; third-party resource
+# packs and zipped dumps are the only archives that ever show up here.
+*.zip
+*.7z
+*.rar
+*.gz
+
+# --- build output ------------------------------------------------------------
+# The Minecraft mods are published as release downloads, not through git.
+# Ignoring every .jar also keeps Minecraft and third-party mod jars out.
+build/
+*.class
+*.jar
+
+# --- python / node -----------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+
+# --- editors, OS --------------------------------------------------------------
+.vscode/
+.idea/
+*.iml
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- a repository of its own -------------------------------------------------
+# Published separately as github.com/svareyko/ready-or-not-crash-fix and has its
+# own ignore rules. Without this line "git add ." would swallow it as an
+# embedded repository.
+/ready-or-not/
+
+# --- no publishable result yet -----------------------------------------------
+# Open investigations: a cause is known or suspected, a verified fix is not.
+# A folder leaves this list when it has something a player can use.
+/mafia-2/
+/cyberpunk-2077/
+
+# --- the owner's personal Minecraft setup ------------------------------------
+# Tooling around third-party resource packs and a deployment helper for a
+# second PC. The mods themselves (minecraft/<mod>/) are published.
+/minecraft/remote/
+/minecraft/make-vanilla-overlay.py
+/minecraft/patch-packs.py
