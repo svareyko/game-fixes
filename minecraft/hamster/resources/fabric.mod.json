@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "hamster",
+  "version": "0.5.0",
+  "name": "Hamsters",
+  "description": "Adds hamsters: tamed and bred with seeds, they follow their owner, sit on command, can be picked up into the inventory while sneaking and thrown - a thrown hamster kills a creeper and stays alive. Five colour variants. They live in plains, sunflower plains and meadows. The hamster wheel gives a comparator signal. Zombies and skeletons are afraid of hamsters.",
+  "authors": [
+    "bombuilder.by"
+  ],
+  "contact": {
+    "homepage": "https://github.com/svareyko/game-fixes/tree/HEAD/minecraft/hamster",
+    "sources": "https://github.com/svareyko/game-fixes",
+    "issues": "https://github.com/svareyko/game-fixes/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "hamster.HamsterMod"
+    ],
+    "client": [
+      "hamster.client.HamsterClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": ">=26.2 <26.3",
+    "fabric-api": "*",
+    "java": ">=25"
+  }
+}

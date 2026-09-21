@@ -1,0 +1,10 @@
+{
+  "entity.hamster.hamster": "Hamster",
+  "item.hamster.hamster": "Hamster",
+  "item.hamster.hamster_spawn_egg": "Hamster Spawn Egg",
+  "block.hamster.hamster_wheel": "Hamster Wheel",
+  "entity.hamster.thrown_hamster": "Thrown Hamster",
+  "message.hamster.tame_first": "Tame the hamster with seeds first",
+  "message.hamster.not_yours": "This hamster is not yours",
+  "modmenu.descriptionTranslation.hamster": "Adds hamsters: tamed and bred with seeds, they follow their owner, sit on command, can be picked up into the inventory while sneaking and thrown - a thrown hamster kills a creeper and stays alive. Five colour variants. They live in plains, sunflower plains and meadows. The hamster wheel gives a comparator signal. Zombies and skeletons are afraid of hamsters."
+}

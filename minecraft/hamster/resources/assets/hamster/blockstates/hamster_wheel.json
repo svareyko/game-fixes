@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,occupied=false": {
+      "model": "hamster:block/hamster_wheel"
+    },
+    "facing=north,occupied=true": {
+      "model": "hamster:block/hamster_wheel"
+    },
+    "facing=east,occupied=false": {
+      "model": "hamster:block/hamster_wheel",
+      "y": 90
+    },
+    "facing=east,occupied=true": {
+      "model": "hamster:block/hamster_wheel",
+      "y": 90
+    },
+    "facing=south,occupied=false": {
+      "model": "hamster:block/hamster_wheel",
+      "y": 180
+    },
+    "facing=south,occupied=true": {
+      "model": "hamster:block/hamster_wheel",
+      "y": 180
+    },
+    "facing=west,occupied=false": {
+      "model": "hamster:block/hamster_wheel",
+      "y": 270
+    },
+    "facing=west,occupied=true": {
+      "model": "hamster:block/hamster_wheel",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "hamster:item/hamster_spawn_egg"
+  }
+}
