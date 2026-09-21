@@ -1,0 +1,44 @@
+{
+  "version": "SC6_pcbranch_V2425.0_C603495",
+  "changelist_main": 603495,
+  "what": "NetResult pool leak: in nsOnlineConnection::StateProxyDetection the vtable slot [9] (Exit) is a shared empty stub, ret 4, so the holder taken in Enter is never released. The patch points the slot at the existing Exit of the twin state StatePlatformNetworkStart.",
+  "search": {
+    "note": "Nothing is looked up by address. Both vtables are found through RTTI: type name .?AV<class>@nsOnlineConnection@@ -> TypeDescriptor -> Complete Object Locator -> vtable. The patch value is read from slot [9] of the donor, not from a constant.",
+    "broken_class": "StateProxyDetection",
+    "donor_class": "StatePlatformNetworkStart",
+    "namespace": "nsOnlineConnection",
+    "slot": 9,
+    "preconditions": [
+      "slot [9] of StateProxyDetection points at a function whose body is C2 04 00 (ret 4)",
+      "slot [9] of the donor has the shape: 83 C1 34 51 8B 0D <pool> E8 <rel32 Free> C2 04 00",
+      "Enter (slot [8]) of both states references the same global pool"
+    ]
+  },
+  "targets": [
+    {
+      "exe": "Blacklist_DX11_game.exe",
+      "sha256_original": "c52b3d0927591e477424f389ff0b1314a300938e19ce61a7b0a7bc09f81c2c89",
+      "sha256_patched": "4bb836c18c34135b73b682045825ad60c19f83888c5522b49e2ffd9c0eb8d7c1",
+      "vtable_broken": "0x029BD4AC",
+      "vtable_donor": "0x029BD44C",
+      "slot_va": "0x029BD4D0",
+      "file_offset": "0x025BB6D0",
+      "orig_bytes": "405C7700",
+      "new_bytes": "102C8200",
+      "pool_global": "0x03383DF8"
+    },
+    {
+      "exe": "Blacklist_game.exe",
+      "sha256_original": "7fcd3a18d4dcc692719984b07268bd42764108e7df37049f1490f20929f9925d",
+      "vtable_broken": "0x0297FEA4",
+      "vtable_donor": "0x0297FE44",
+      "slot_va": "0x0297FEC8",
+      "file_offset": "0x0257EAC8",
+      "orig_bytes": "F03EA100",
+      "new_bytes": "50E0AB00",
+      "pool_global": "0x032B5DC8",
+      "sha256_patched": "690f721db38a36aa8c7b7c0fe99dd2a20b5078fa64a3418afac5ef75144ba635"
+    }
+  ],
+  "applied": "2026-09-04, both builds. Verified with a disassembler on the game files: only slot [9] changed, 3 bytes differ from the backup."
+}
