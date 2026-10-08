@@ -10,6 +10,7 @@ a crash dump, a disassembly, the site's own code — and each one can be undone.
 | [mapgenie/](mapgenie/) | **MapGenie Tweaks** — a userscript for the interactive maps on mapgenie.io: remembers the marker categories you chose (per map) and removes the ads. One-click install into Tampermonkey | verified on the live site |
 | [cossacks-back-to-war/](cossacks-back-to-war/) | **Cossacks: Back to War** (Steam) on a modern PC: the game no longer switches the real desktop resolution and scrambles windows across monitors, the main menu is no longer cut off, no crash on mission load at high resolutions | all three verified in game |
 | [splinter-cell-blacklist/](splinter-cell-blacklist/) | **Splinter Cell Blacklist**: the crash to desktop after about half an hour of play — a leaking object pool in the online login state machine, fixed by changing one value in a vtable | patch applied and checked with a disassembler, awaiting confirmation in play |
+| [stalker-2/](stalker-2/) | **S.T.A.L.K.E.R. 2**: `DXGI_ERROR_DEVICE_HUNG` / "GPU Crash dump Triggered" a few minutes into play on an RTX 5090 — traced with the NVIDIA driver's own crash dump and Direct3D 12 DRED to the game's async compute work; a game setting stops it | workaround verified in one play session; root cause narrowed down, not proven |
 | [minecraft/](minecraft/) | Three **Fabric mods for Minecraft 26.2**: hamsters, metal torches, diamond and ancient-debris markers on Xaero's map | see each mod |
 
 Published separately: **[ready-or-not-crash-fix](https://github.com/svareyko/ready-or-not-crash-fix)** —
