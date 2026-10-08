@@ -1,4 +1,4 @@
-# Hamsters — a Fabric mod for Minecraft 26.2
+# Pocket Hamsters — a Fabric mod for Minecraft 26.2
 
 **Adds hamsters to Minecraft.** Tame them with seeds, breed them, carry one in your
 pocket, throw it at a creeper, and build a hamster wheel that drives redstone.
@@ -110,8 +110,8 @@ same thing.
 **2. Download Fabric API.** Get the file for game version 26.2 from
 [modrinth.com/mod/fabric-api](https://modrinth.com/mod/fabric-api).
 
-**3. Download the mod.** Get **`hamster-0.5.0.jar`** from the
-[release page](https://github.com/svareyko/game-fixes/releases/tag/hamster-0.5.0).
+**3. Download the mod.** Get **`hamster-0.5.1.jar`** from the
+[release page](https://github.com/svareyko/game-fixes/releases/tag/hamster-0.5.1).
 
 **4. Put both `.jar` files into the `mods` folder of the game directory.** Do not unzip
 them. With the official launcher the folder is:
@@ -136,9 +136,9 @@ Any one of these is enough:
   You should see three items: **Hamster Spawn Egg**, **Hamster** and **Hamster Wheel**.
 - In a world with cheats enabled run `/summon hamster:hamster` — a hamster appears.
 - Open `logs/latest.log` in the game directory. Near the top, in the list that starts
-  with `Loading ... mods:`, there is the line `- hamster 0.5.0`.
+  with `Loading ... mods:`, there is the line `- hamster 0.5.1`.
 - If you use [Mod Menu](https://modrinth.com/mod/modmenu), the mod list in the main
-  menu shows **Hamsters**.
+  menu shows **Pocket Hamsters**.
 
 If the game stops at start with the window *Incompatible mods found!* and asks you to
 install `fabric-api`, step 2 was skipped or the file is for another game version.
@@ -158,7 +158,7 @@ been to. Around a built-up base it is easier to bring a pair and breed them.
 
 ## Uninstall
 
-Close the game and delete `hamster-0.5.0.jar` from the `mods` folder. Fabric API can
+Close the game and delete `hamster-0.5.1.jar` from the `mods` folder. Fabric API can
 stay, other mods use it too.
 
 **Think about your world first.** Hamsters, hamster wheels and hamsters carried in an
@@ -205,15 +205,16 @@ it falls down from there, thrown into lava it stands in lava, and thrown into th
 it never lands at all.
 
 **What does the hamster remember while it is in my pocket?**
-Its colour and its name (from a Name Tag). It comes out as a healthy adult that belongs
-to whoever let it out. Known flaw: a **thrown** hamster loses its custom name — put a
-named hamster down on a block instead.
+Its colour and its name (from a Name Tag), whether you put it down on a block or throw
+it. It comes out as a healthy adult that belongs to whoever let it out. (Up to 0.5.0 a
+**thrown** hamster lost its name; 0.5.1 fixed that.)
 
 **The wheel keeps spinning, but there is no hamster in it.**
-Break the wheel and place it again. The wheel can be left "occupied" when the hamster
-vanished in the middle of a run — for example the area was unloaded because you walked
-away or left the game, or the hamster died. This was found by reading the code and has
-not been reproduced in game yet.
+Give it a second. Since 0.5.1 a wheel checks once a second that its hamster is still
+inside and stops when it is not — the hamster was picked up, died, or was unloaded with
+the area when you walked away or left the game. A wheel left spinning by 0.5.0 stops the
+same way, about a second after you come near it with 0.5.1; there is nothing to do. If
+one keeps spinning anyway, break it and place it again, and please open an issue.
 
 **In Creative mode the hamster in my hand never runs out.**
 Correct — Creative mode does not use items up, so every click makes one more hamster.
@@ -230,12 +231,32 @@ Yes, the [MIT licence](../../LICENSE) allows it.
 
 ## Status
 
-Version **0.5.0**, for Minecraft 26.2.
+Version **0.5.1**, for Minecraft 26.2. Up to 0.5.0 the mod was called *Hamsters*; only the
+display name changed. The mod id `hamster`, the file name and the release tags are the
+same, so existing worlds are not affected.
 
-**Verified in game on 2026-09-20:** taming and breeding with seeds, the five colours,
-following the owner and sitting on command, picking up into the inventory while
+**What 0.5.1 fixes** — the two known flaws of 0.5.0:
+
+- **A wheel could stay "occupied" for good** when its hamster vanished in the middle of
+  a run: picked up into the inventory, killed, or unloaded with the area. The comparator
+  kept giving 15, the rim kept spinning, and no hamster would use that wheel again. Now
+  the wheel checks once a second that its hamster is still there and frees itself when
+  it is not. Wheels already stuck in a world played with 0.5.0 free themselves the same
+  way, with nothing to do on your side.
+- **A thrown hamster lost its name** from a Name Tag. It keeps it now, like a hamster put
+  down on a block.
+
+**0.5.1 has not been played yet.** Both flaws were found by reading the code, and
+neither was ever reproduced in game. The fixes were checked against the code of
+Minecraft 26.2 and by the build's own checks — every game class the mod uses exists,
+the models bake, Fabric Loader accepts the metadata — but not in a running game.
+
+**Verified in game on 2026-09-20, with 0.5.0:** taming and breeding with seeds, the five
+colours, following the owner and sitting on command, picking up into the inventory while
 sneaking, throwing, a thrown hamster killing a creeper as a normal kill and landing
 unharmed, zombies and skeletons running away, the wheel and its comparator signal.
+0.5.1 changes only when a wheel counts as occupied and how a hamster comes out of the
+pocket; the rest of the code is the same as in the tested 0.5.0.
 
 **Not verified:**
 
@@ -245,12 +266,6 @@ unharmed, zombies and skeletons running away, the wheel and its comparator signa
   classes inherit from the two that were tested.
 - Removing the mod from a world that has hamsters in it. The *Uninstall* section
   describes what Minecraft normally does with content of a missing mod.
-- The two known flaws from the FAQ — the wheel that stays "occupied" and the name lost
-  by a thrown hamster — come from reading the code and have not been reproduced in game.
-
-The jar on the release page was rebuilt after the in-game test to change its metadata
-only: author, licence, links and an English description. Its compiled classes are
-byte-for-byte identical to the tested build.
 
 Found a bug, or it works for you on a server? Please
 [open an issue](https://github.com/svareyko/game-fixes/issues) either way.

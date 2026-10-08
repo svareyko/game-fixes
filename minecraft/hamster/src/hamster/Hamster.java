@@ -1,5 +1,6 @@
 package hamster;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.chat.Component;
@@ -56,6 +57,19 @@ public class Hamster extends TamableAnimal {
     /** Whether it runs in a wheel. The client needs it: this flag makes the model move its legs. */
     private static final EntityDataAccessor<Boolean> DATA_IN_WHEEL =
             SynchedEntityData.defineId(Hamster.class, EntityDataSerializers.BOOLEAN);
+
+    /**
+     * The wheel this hamster is running in, on the server; null when it is not in one.
+     *
+     * This is the claim that keeps the wheel occupied: the wheel frees itself when no
+     * living hamster claims it (HamsterWheelBlockEntity.serverTick). Set by UseWheelGoal
+     * on entering - before the block state - and cleared in its stop().
+     *
+     * Deliberately neither saved nor synchronised. After a reload no run is in progress,
+     * so no hamster may claim a wheel - that is exactly how a wheel left occupied by a
+     * hamster that unloaded mid-run finds out it is free.
+     */
+    private BlockPos wheelPos;
 
     public Hamster(EntityType<? extends Hamster> type, Level level) {
         super(type, level);
@@ -122,6 +136,14 @@ public class Hamster extends TamableAnimal {
         this.entityData.set(DATA_IN_WHEEL, value);
     }
 
+    BlockPos getWheelPos() {
+        return this.wheelPos;
+    }
+
+    void setWheelPos(BlockPos pos) {
+        this.wheelPos = pos;
+    }
+
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty,
                                         EntitySpawnReason reason, SpawnGroupData data) {
@@ -133,6 +155,9 @@ public class Hamster extends TamableAnimal {
     protected void addAdditionalSaveData(ValueOutput out) {
         super.addAdditionalSaveData(out);
         out.putInt("Variant", this.entityData.get(DATA_VARIANT));
+        // The wheel is left out on purpose - neither the claim nor the "in wheel" flag is
+        // saved. A hamster saved in the middle of a run comes back standing, not running,
+        // and its wheel frees itself; see wheelPos.
     }
 
     @Override

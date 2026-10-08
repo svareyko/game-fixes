@@ -1,4 +1,4 @@
-# How the Hamsters mod works
+# How the Pocket Hamsters mod works
 
 **Read this when:** you want to change the mod, port it to another Minecraft version,
 or borrow a technique for a mod of your own.
@@ -23,7 +23,7 @@ sections do not depend on each other.
 [Known rough edges](#known-rough-edges) ·
 [Porting to a new game version](#porting-to-a-new-game-version)
 
-Everything below is about Minecraft **26.2**, Fabric Loader 0.19 and version **0.5.0**
+Everything below is about Minecraft **26.2**, Fabric Loader 0.19 and version **0.5.1**
 of the mod. Class and method names are the real ones from the game jar: 26.x is not
 obfuscated. Where a statement says "checked in the bytecode", it was read with `javap`
 from the 26.2 client, not taken from a forum.
@@ -111,7 +111,7 @@ into the current directory. The folder is git-ignored.
 | `src/hamster/ThrownHamster.java` | The projectile: kills a creeper, releases the animal |
 | `src/hamster/MonsterFear.java` | Zombies and skeletons avoid hamsters |
 | `src/hamster/HamsterWheelBlock.java` | The wheel block: facing, occupied flag, comparator output |
-| `src/hamster/HamsterWheelBlockEntity.java` | Rotation angle of the rim, client only |
+| `src/hamster/HamsterWheelBlockEntity.java` | Rotation angle of the rim on the client; on the server, the watchdog that frees a wheel whose hamster is gone |
 | `src/hamster/UseWheelGoal.java` | The "run in the wheel" behaviour goal |
 | `src/hamster/client/HamsterClient.java` | Entry point `client`: model layers and renderers |
 | `src/hamster/client/HamsterModel.java` | Geometry and animation of the hamster |
@@ -236,9 +236,10 @@ other mods or from vanilla textures.
 Whether the wheel is occupied is a **block state property** (`occupied`, next to
 `facing`), not a field of the block entity. The block state reaches the client for
 free, the client spins the rim from it, and the comparator reads the same value:
-`getAnalogOutputSignal` returns 15 or 0. The block entity exists only so that a renderer
-can be attached, and to hold the rotation angle on the client. Nothing of it is saved
-or synchronised, and its ticker is registered on the client only.
+`getAnalogOutputSignal` returns 15 or 0. The block entity holds no data of its own —
+nothing of it is saved or synchronised. On the client it carries the renderer and the
+rotation angle; on the server its ticker is the watchdog that frees a wheel whose
+hamster is gone, see [The watchdog](#the-watchdog-a-wheel-frees-itself).
 
 ### The goal
 
@@ -248,9 +249,9 @@ or synchronised, and its ticker is registered on the client only.
 |---|---|
 | `canUse` | Not a baby, not told to sit, not in water, cooldown over. Scans ±8 blocks horizontally and ±3 vertically for the nearest wheel with `occupied=false` |
 | walking | Pathfinds to the wheel; gives up after 300 ticks |
-| `enter` | Within 1.4 blocks: checks the block state **again** instead of trusting its memory, sets `occupied=true` and the `in wheel` flag |
-| running | 400 ticks. Every tick: zero velocity, position pinned to the centre of the block at height 0.19, heading re-applied |
-| `stop` | Clears `occupied` and the flag and starts a cooldown of 600 — otherwise one hamster would own the wheel forever |
+| `enter` | Within 1.4 blocks (`REACH`): checks the block state **again** instead of trusting its memory, claims the wheel (`Hamster.wheelPos`), sets the `in wheel` flag and then `occupied=true` |
+| running | 400 ticks. Every tick: zero velocity, position pinned to the centre of the block at height 0.19, heading re-applied. Ends early if the wheel no longer says `occupied` |
+| `stop` | Clears `occupied`, the claim and the flag and starts a cooldown of 600 — otherwise one hamster would own the wheel forever |
 
 The cooldown is counted down inside `canUse`, and an idle goal is asked `canUse` only
 from `GoalSelector.tick()`, which `Mob.serverAiStep` runs on **every second** game tick
@@ -260,6 +261,63 @@ means about a minute, not half of one. The walking and running counters live in
 
 Height 0.19 is the inner edge of the rim: the wheel centre is at 0.5, the inner radius
 is 5/16, so the track is at 0.5 − 0.31.
+
+### The watchdog: a wheel frees itself
+
+Up to 0.5.0 the `occupied` flag could outlive the hamster. The goal clears it in
+`stop()`, and the game calls `stop()` only from `GoalSelector.tick()` and
+`removeAllGoals` (which `removeGoal` goes through). A hamster that vanishes in the middle
+of a run never gets there — checked in the bytecode:
+
+| How the hamster vanishes | Why its `stop()` never runs |
+|---|---|
+| Picked up into the inventory | `Hamster.mobInteract` calls `discard()`: the entity is removed, its goals are not stopped |
+| Killed outright | `LivingEntity.aiStep` skips `serverAiStep` while `isImmobile()`, which is `isDeadOrDying()`; 20 ticks later `tickDeath` removes the body |
+| Unloaded with its chunk, or the world closed | `PersistentEntitySectionManager.unloadEntity` calls the final `setRemoved(UNLOADED_TO_CHUNK)` directly — not even `remove()` |
+
+Such a wheel gave signal 15 for good, kept spinning, and no hamster would enter it. Since
+0.5.1 the wheel checks for itself, in two parts:
+
+- **The claim.** `Hamster.wheelPos` is a plain field: the wheel the hamster runs in, or
+  null. `enter()` sets it **before** it sets `occupied=true`, `stop()` clears it. It is
+  neither saved nor synchronised, on purpose: after a reload no run is in progress, so no
+  hamster may claim a wheel.
+- **The watchdog.** `HamsterWheelBlockEntity.serverTick` returns at once unless the wheel
+  is occupied. Otherwise, once a second (`getGameTime() % 20 == 0`; the beacon throttles
+  its own check the same way with `% 80`), it asks
+  `Level.hasEntities(HAMSTER, box, h -> h.isAlive() && pos.equals(h.getWheelPos()))` and,
+  when nothing matches, sets `occupied=false` with flag 3 — that notifies the
+  neighbours, the comparator among them, and the client.
+
+| Detail | Reason |
+|---|---|
+| The claim has to name **this** wheel, "a hamster nearby" is not enough | Two wheels side by side must not keep each other occupied |
+| The box is the block grown by `REACH` (1.4) on every side, so it reaches 1.9 from the centre | On the tick it climbs in, the hamster is still up to `REACH` from the centre — it is pinned into the rim only from the next tick — and `ServerLevel.tick` runs entities before block entities, so the watchdog can look on that very tick |
+| The claim is set before the block state | Whatever the watchdog sees as occupied already has its claimant |
+| `isAlive()` | A dying hamster lies in the world for 20 more ticks; it should not hold the wheel meanwhile |
+| The ticker is attached to every wheel and returns early | A ticker that depends on the state, like the campfire's, would work too: `LevelChunk` resolves the ticker again on chunk load (`registerAllBlockEntitiesAfterLevelLoad`) and on every state change that keeps the block entity (`setBlockState` → `updateBlockEntityTicker`). Wheels are few, and one property read per tick is not worth a second moving part |
+| Nothing in `Entity.remove()` | Touching the world while a chunk unloads is asking for trouble, and the unload does not go through `remove()` anyway, see the table above |
+| `getGameTime()` works in every dimension | The Nether and the End read the clock of the overworld through `DerivedLevelData` |
+
+**After a reload** nothing of a run is left. Neither the claim nor the `in wheel` flag is
+saved — `Entity.saveWithoutId` writes no synchronised data by itself, and `Hamster` adds
+only `Variant`. A hamster saved in the middle of a run comes back standing where it ran,
+with no claim, and its wheel frees itself within a second; the hamster may then climb in
+again. Wheels left stuck by 0.5.0 heal the same way: the block entity is saved with the
+chunk although it carries no data (`LevelChunk.getBlockEntityNbtForSaving`), so it is
+back after loading and gets its ticker.
+
+**Chunks that are loaded but not simulated.** At the edge of the simulation distance there
+is a ring of chunks at level 32: `ChunkLevel.isBlockTicking` is true there and
+`isEntityTicking` is not. Block entities tick, entities do not, so a hamster running in a
+wheel there is frozen mid-run, claim set. The watchdog still finds it: the entity sections
+of such a chunk are `TRACKED`, `Visibility.isAccessible()` is true for them, and
+`EntitySectionStorage` skips only inaccessible sections. So the wheel stays occupied —
+which is true, the hamster is in it — and the run goes on when the player comes back.
+
+**The goal trusts the block state.** The other way round, a hamster keeps running only
+while its wheel says `occupied`. If the flag is cleared under it — by a debug stick or a
+command — it gets out instead of sharing the wheel with the next hamster.
 
 ### Rendering the rim
 
@@ -323,8 +381,11 @@ The item does **not** store the whole animal, only the colour variant — one nu
 the mod's own data component `hamster:variant` (`Codec.INT`, synchronised as a var-int).
 Serialising the entire entity is possible, but in 26.x that means `ValueInput` /
 `ValueOutput` and fiddling with tags for data a pocket pet does not need. The name
-travels through the vanilla `CUSTOM_NAME` component. Everything else is recreated on
-release: full health, an adult, and the owner is whoever lets it out. A released
+travels through the vanilla `CUSTOM_NAME` component. Both ways out of the pocket — put
+down (`useOn`) and thrown (`ThrownHamster`) — restore the colour and the name through one
+helper, `HamsterItem.applyStack`, the reverse of `HamsterItem.of`. Up to 0.5.0 each path
+unpacked the stack by itself, and the throw forgot the name. Everything else is recreated
+on release: full health, an adult, and the owner is whoever lets it out. A released
 hamster gets `setPersistenceRequired()` — it is a pet, not a random animal from the
 plains.
 
@@ -365,11 +426,14 @@ which is exactly what is wanted.
 inaccuracy 1.0, and is drawn with the item icon by the vanilla `ThrownItemRenderer` —
 no model of its own.
 
-- `onHit` always releases the animal at the point of impact, with the variant from the
-  thrown stack, tamed by the thrower, persistent. The throw as such never costs the
-  pet. What follows is ordinary game physics: released high up a wall it falls from
-  there, and a projectile that never hits anything — thrown into the void — never
-  releases it.
+- `onHit` always releases the animal at the point of impact, with the colour and the
+  name from the thrown stack (`HamsterItem.applyStack`), tamed by the thrower,
+  persistent. The projectile has the whole stack to give: `ThrowableItemProjectile`
+  keeps `copyWithCount(1)` of it, components included, and saves it as `Item` — so the
+  name survives even a world saved while the hamster was in flight. The throw as such
+  never costs the pet. What follows is ordinary game physics: released high up a wall
+  it falls from there, and a projectile that never hits anything — thrown into the
+  void — never releases it.
 - `onHitEntity` on a `Creeper` deals twice the creeper's maximum health through
   `damageSources().thrown(projectile, owner)` — the source a snowball uses. The player
   is the attacker, so loot and experience drop as for any kill. The creeper does not
@@ -398,8 +462,6 @@ mods are not affected.
 
 | What | State |
 |---|---|
-| **The `occupied` flag can outlive the hamster.** It is cleared only in `UseWheelGoal.stop()`, and the game calls `stop()` from `GoalSelector.tick` / `removeGoal` only. A mob that dies is no longer ticked (`LivingEntity.aiStep` skips `serverAiStep` when `isDeadOrDying()`), and nothing stops the goals of an entity that is unloaded or discarded. A hamster that vanishes in the middle of a run therefore leaves a wheel that spins and gives signal 15 forever, and that no hamster will enter | Found by reading the bytecode, not reproduced in game. Workaround: break the wheel and place it again. A fix needs something on the block's side — for example a scheduled tick that looks for a hamster inside |
-| **A thrown hamster loses its custom name.** `HamsterItem.useOn` restores `CUSTOM_NAME`, `ThrownHamster.releaseHamster` does not | Found by reading the code |
 | The vanilla `AgeableMobRenderer` is `@Deprecated` | More than two dozen vanilla renderers of 26.2 still extend it — the rabbit's, the cat's and the wolf's among them |
 | Fabric's `EntityRendererRegistry` and `BlockEntityRendererRegistry` are `@Deprecated` | They work on 26.2 |
 | `Entity.hurt(DamageSource, float)`, used for the creeper, is `@Deprecated` | It works on 26.2; the server-side entry point next to it is `hurtServer(ServerLevel, DamageSource, float)` |
@@ -423,6 +485,7 @@ again at the next game update, not now: this is the working API of 26.2.
 |---|---|
 | `HamsterWheelRenderer.submit` | The parameter order of the `submitModel` overload — read its bytecode again, see [the outline pitfall](#pitfall-the-wheel-glowed-through-walls) |
 | `HamsterWheelModel` | Whether block entity renderers still receive a ready `PoseStack` |
+| `HamsterWheelBlockEntity.serverTick` | That a hamster frozen in a chunk which ticks blocks but not entities is still found by `Level.hasEntities`, and that a block entity without data is still saved with its chunk and gets its ticker back on load — see [the watchdog](#the-watchdog-a-wheel-frees-itself) |
 | `Hamster.mobInteract` | The dispatch chain in [the table above](#pitfall-a-gesture-that-fails-silently), sneaking in particular |
 | `MonsterFear` | Where `Zombie` and `AbstractSkeleton` live (in 26.2: `monster.zombie` and `monster.skeleton`) and that `getGoalSelector()` is still public |
 | `HamsterMod` | The identifiers of the creative tabs (`minecraft:spawn_eggs`, `minecraft:functional_blocks`) — the fields in `CreativeModeTabs` are private, so the keys are spelled out |

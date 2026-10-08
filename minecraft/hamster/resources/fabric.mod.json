@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "hamster",
-  "version": "0.5.0",
-  "name": "Hamsters",
+  "version": "0.5.1",
+  "name": "Pocket Hamsters",
   "description": "Adds hamsters: tamed and bred with seeds, they follow their owner, sit on command, can be picked up into the inventory while sneaking and thrown - a thrown hamster kills a creeper and stays alive. Five colour variants. They live in plains, sunflower plains and meadows. The hamster wheel gives a comparator signal. Zombies and skeletons are afraid of hamsters.",
   "authors": [
     "bombuilder.by"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Builds the Hamsters mod for Minecraft 26.2 / Fabric - without Gradle and Loom.
+Builds the Pocket Hamsters mod for Minecraft 26.2 / Fabric - without Gradle and Loom.
 
 Why without them: Minecraft 26.x ships UNobfuscated (Mojang stopped publishing
 mappings with 26.1, Yarn was never released for 26.2, fabric-intermediary for

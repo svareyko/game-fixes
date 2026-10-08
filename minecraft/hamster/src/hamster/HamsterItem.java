@@ -1,7 +1,8 @@
 package hamster;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -38,14 +39,30 @@ public class HamsterItem extends Item {
         super(properties);
     }
 
-    /** Puts the hamster into a stack: the colour survives the pocket. */
+    /** Puts the hamster into a stack: the colour and the name survive the pocket. */
     public static ItemStack of(Hamster hamster) {
         ItemStack stack = new ItemStack(HamsterMod.HAMSTER_ITEM);
         stack.set(HamsterMod.HAMSTER_VARIANT, hamster.getVariant().ordinal());
         if (hamster.hasCustomName()) {
-            stack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, hamster.getCustomName());
+            stack.set(DataComponents.CUSTOM_NAME, hamster.getCustomName());
         }
         return stack;
+    }
+
+    /**
+     * The reverse of {@link #of}: gives a freshly created hamster what the stack carried -
+     * the colour and the name.
+     *
+     * Both ways out of the pocket go through here: put down on a block (useOn) and thrown
+     * (ThrownHamster). Up to 0.5.0 each of them unpacked the stack by itself, and the throw
+     * forgot the name.
+     */
+    static void applyStack(ItemStack stack, Hamster hamster) {
+        hamster.setVariant(HamsterVariant.byId(stack.getOrDefault(HamsterMod.HAMSTER_VARIANT, 0)));
+        Component name = stack.get(DataComponents.CUSTOM_NAME);
+        if (name != null) {
+            hamster.setCustomName(name);
+        }
     }
 
     /**
@@ -86,10 +103,7 @@ public class HamsterItem extends Item {
         }
 
         ItemStack stack = context.getItemInHand();
-        hamster.setVariant(HamsterVariant.byId(stack.getOrDefault(HamsterMod.HAMSTER_VARIANT, 0)));
-        if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME)) {
-            hamster.setCustomName(stack.get(net.minecraft.core.component.DataComponents.CUSTOM_NAME));
-        }
+        applyStack(stack, hamster);
 
         Player player = context.getPlayer();
         if (player != null) {

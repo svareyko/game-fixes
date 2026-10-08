@@ -139,8 +139,8 @@ public class HamsterMod implements ModInitializer {
                     .setId(HAMSTER_WHEEL_ITEM_KEY)));
 
     /**
-     * The block entity exists only for the renderer of the spinning rim: whether the
-     * wheel is occupied lives in the block state, there is nothing for it to save.
+     * The block entity: the spinning rim on the client, the occupied-flag watchdog on the
+     * server. Whether the wheel is occupied lives in the block state - nothing to save.
      */
     public static final BlockEntityType<HamsterWheelBlockEntity> HAMSTER_WHEEL_ENTITY = Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE,

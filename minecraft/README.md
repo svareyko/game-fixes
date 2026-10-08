@@ -7,7 +7,7 @@ They are independent: install one or all.
 
 | Mod | What it adds | Where it must be installed | State |
 |---|---|---|---|
-| [hamster/](hamster/) — **Hamsters** 0.5.0 | Tameable hamsters in five colours: they follow you, sit on command, can be carried in the inventory and thrown (a thrown hamster finishes a creeper and lands unharmed). Zombies and skeletons keep away from them. Plus a hamster wheel that feeds a comparator | client **and** server | fully verified in game |
+| [hamster/](hamster/) — **Pocket Hamsters** 0.5.1 | Tameable hamsters in five colours: they follow you, sit on command, can be carried in the inventory and thrown (a thrown hamster finishes a creeper and lands unharmed). Zombies and skeletons keep away from them. Plus a hamster wheel that feeds a comparator | client **and** server | verified in game as 0.5.0 (then called *Hamsters*); the two fixes of 0.5.1 (a wheel frees itself when its hamster is gone, a thrown hamster keeps its name) are not played yet |
 | [metaltorch/](metaltorch/) — **Metal Torches** 1.1.1 | An iron torch (almost white flame) and a gold torch (yellow), light level 15 — one more than a vanilla torch, the engine's maximum | client **and** server | verified in game as 1.1.0; the two corrections of 1.1.1 (pistons, spark height on a wall) are not played yet |
 | [oremap/](oremap/) — **Ore Map** 0.5.0 | Puts markers for diamond ore and ancient debris, with their depth, on Xaero's World Map. Off until you switch it on. Works only in single player and on LAN / private-network servers — it keeps itself off on public ones | client only; needs **both** Xaero's Minimap and Xaero's World Map | markers on the map were play-tested in an early build; what was added later is self-tested only — see the mod's README |
 
@@ -25,7 +25,7 @@ They are independent: install one or all.
    is a folder called `mods` (create it if it is missing). Some launchers keep a separate game
    folder per profile — their settings show the path.
 3. Download the `.jar` of the mod from the [Releases](https://github.com/svareyko/game-fixes/releases)
-   page — the file is called like the mod, for example `hamster-0.5.0.jar` — and
+   page — the file is called like the mod, for example `hamster-0.5.1.jar` — and
    [Fabric API](https://modrinth.com/mod/fabric-api), and put both into `mods`.
 4. Start the game. In the main menu the mod list (with [Mod Menu](https://modrinth.com/mod/modmenu)
    installed) shows the mod.

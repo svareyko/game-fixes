@@ -28,8 +28,9 @@ import net.minecraft.world.phys.HitResult;
  *    from death.
  *
  * 2. The hamster always survives. Wherever the projectile lands - on a creeper, on
- *    another mob, on a block - the animal appears at the point of impact unharmed
- *    and tamed by whoever threw it. The throw as such never costs the pet.
+ *    another mob, on a block - the animal appears at the point of impact unharmed,
+ *    with its colour and name, and tamed by whoever threw it. The throw as such never
+ *    costs the pet.
  *
  * No other creature takes damage from a hamster: it is a hamster, not a missile.
  */
@@ -82,8 +83,9 @@ public class ThrownHamster extends ThrowableItemProjectile {
         }
         hamster.snapTo(result.getLocation().x, result.getLocation().y, result.getLocation().z,
                 this.getYRot(), 0.0F);
-        hamster.setVariant(HamsterVariant.byId(
-                this.getItem().getOrDefault(HamsterMod.HAMSTER_VARIANT, 0)));
+        // getItem() is a copy of the thrown stack, components and all: ThrowableItemProjectile
+        // stores copyWithCount(1) and saves it with the projectile. So the name is there too.
+        HamsterItem.applyStack(this.getItem(), hamster);
         if (this.getOwner() instanceof Player player) {
             hamster.tame(player);
         }

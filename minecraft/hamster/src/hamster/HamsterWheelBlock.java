@@ -27,8 +27,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  *
  * The "occupied" state is kept in the block state, not in the block entity: that
  * way it reaches the client for free, and the comparator reads the very same value.
- * The block entity is needed only to have something to attach the renderer of the
- * spinning rim to, and to keep the rotation angle on the client.
+ * The block entity holds no data. On the client it carries the renderer of the
+ * spinning rim and its rotation angle; on the server it is the watchdog that frees
+ * the wheel when its hamster is gone.
  */
 public class HamsterWheelBlock extends BaseEntityBlock {
 
@@ -103,12 +104,14 @@ public class HamsterWheelBlock extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
                                                                  net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
-        // Ticks on the client only: the server has nothing to spin, the occupied
-        // flag is in the block state anyway.
-        if (!level.isClientSide()) {
-            return null;
+        // Both sides tick, whatever the state: the client spins the rim (and has to tick on
+        // after it stops, or the interpolated angle would keep jittering), the server runs
+        // the watchdog, which returns at once on a free wheel.
+        if (level.isClientSide()) {
+            return createTickerHelper(type, HamsterMod.HAMSTER_WHEEL_ENTITY,
+                    HamsterWheelBlockEntity::clientTick);
         }
         return createTickerHelper(type, HamsterMod.HAMSTER_WHEEL_ENTITY,
-                HamsterWheelBlockEntity::clientTick);
+                HamsterWheelBlockEntity::serverTick);
     }
 }
